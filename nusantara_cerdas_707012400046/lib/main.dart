@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'halaman_utama.dart';
+import 'laporan_model.dart';
 
 void main() {
-  runApp(const NusantaraCerdasApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => LaporanModel(),
+      child: const NusantaraCerdasApp(),
+    ),
+  );
 }
 
 class NusantaraCerdasApp extends StatelessWidget {

@@ -1,78 +1,47 @@
-import 'package:flutter/material.dart';
 
-class PanelLaporanWarga extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'laporan_model.dart';
+
+class PanelLaporanWarga extends StatelessWidget {
   const PanelLaporanWarga({super.key});
 
   @override
-  State<PanelLaporanWarga> createState() => _PanelLaporanWargaState();
-}
-
-class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
-  int _jumlahLaporan = 0;
-
-  void _laporanMasuk() {
-    setState(() {
-      _jumlahLaporan++;
-    });
-  }
-
-  void _laporanSelesai() {
-    setState(() {
-      if (_jumlahLaporan > 0) {
-        _jumlahLaporan--;
-      }
-    });
-  }
-
-  void _resetHarian() {
-    setState(() {
-      _jumlahLaporan = 0;
-    });
-  }
-
-  String _dapatkanStatusPelayanan() {
-    if (_jumlahLaporan < 5) {
-      return 'Pelayanan Lancar';
-    } else if (_jumlahLaporan <= 10) {
-      return 'Pelayanan Sibuk';
-    } else {
-      return 'Perlu Penambahan Petugas';
-    }
-  }
-
-  Color _dapatkanWarnaStatus() {
-    if (_jumlahLaporan < 5) {
-      return Colors.green;
-    } else if (_jumlahLaporan <= 10) {
-      return Colors.orange;
-    } else {
-      return Colors.red;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final model = context.watch<LaporanModel>();
+    final jumlah = model.jumlahLaporan;
+
+    final Color warna;
+    if (jumlah < 5) {
+      warna = Colors.green;
+    } else if (jumlah <= 10) {
+      warna = Colors.orange;
+    } else {
+      warna = Colors.red;
+    }
+
     return Card(
-      elevation: 3.0,
+      elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             const Text(
               'Panel Laporan Warga',
               style: TextStyle(
-                fontSize: 16.0,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12.0),
+            const SizedBox(height: 12),
             Text(
-              '$_jumlahLaporan',
+              '$jumlah',
               style: TextStyle(
-                fontSize: 48.0,
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
                 color: Colors.teal[800],
               ),
@@ -81,32 +50,33 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
               'Jumlah Laporan Aktif',
               style: TextStyle(color: Colors.grey),
             ),
-            const SizedBox(height: 12.0),
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
+                horizontal: 16,
+                vertical: 8,
               ),
               decoration: BoxDecoration(
-                color: _dapatkanWarnaStatus().withAlpha(30),
-                borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(color: _dapatkanWarnaStatus()),
+                color: warna.withAlpha(30),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: warna),
               ),
               child: Text(
-                'Status: ${_dapatkanStatusPelayanan()}',
+                'Status: ${model.statusPelayanan}',
                 style: TextStyle(
-                  color: _dapatkanWarnaStatus(),
+                  color: warna,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _laporanMasuk,
+                    onPressed: () {
+                      context.read<LaporanModel>().tambahLaporan();
+                    },
                     icon: const Icon(Icons.add),
                     label: const Text('Laporan Masuk'),
                     style: ElevatedButton.styleFrom(
@@ -115,25 +85,31 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8.0),
+                const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _laporanSelesai,
+                    onPressed: () {
+                      context
+                          .read<LaporanModel>()
+                          .selesaikanLaporan();
+                    },
                     icon: const Icon(Icons.remove),
                     label: const Text('Laporan Selesai'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber[800],
+                      backgroundColor: Colors.amber,
                       foregroundColor: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: _resetHarian,
+                onPressed: () {
+                  context.read<LaporanModel>().resetLaporan();
+                },
                 icon: const Icon(Icons.refresh),
                 label: const Text('Reset Harian'),
               ),
